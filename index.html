@@ -33,60 +33,60 @@
 </head>
 <body>
 <div class="wrapper">
-  <div class="wrapper-row">
+    <div class="wrapper-row">
 
-    <div id="container">
-      <div class="columnLayout">
+        <div id="container">
+            <div class="columnLayout">
 
-        <div class="rowLayout">
-          <div class="descLayout">
-            <div class="pad" data-jsfiddle="example1">
+                <div class="rowLayout">
+                    <div class="descLayout">
+                        <div class="pad" data-jsfiddle="example1">
 
-              <h2>Integration ruleJS library with Handsontable</h2>
+                            <h2>Integration ruleJS library with Handsontable</h2>
 
-              <p>The following demo uses <code>ruleJS</code> library to parse some formulas</p>
+                            <p>The following demo uses <code>ruleJS</code> library to parse some formulas.<br>
+                                To enable these feature, use settings <code>formulas: true</code></p>
+                            <div id="example1"></div>
+                        </div>
+                    </div>
 
-              <div id="example1"></div>
+                    <div class="codeLayout">
+                        <div class="pad">
+                            <div class="jsFiddle">
+                                <button class="jsFiddleLink" data-runfiddle="example1">Edit in jsFiddle</button>
+                            </div>
+
+                            <script data-jsfiddle="example1">
+                                var data = [
+                                    ["", "Maserati", "Mazda", "Mercedes", "Mini", "Mitsubishi"],
+                                    [2009, 0, 2941, 4303, 354, 5814],
+                                    [2010, 5, 2905, 2867, '=SUM(B3,2,3)', 5284],
+                                    [2011, 4, 2517, 4822, 552, 6127],
+                                    [2012, '=SUM(A1:A4)', '=SUM(B4,E2)', '=A1/B1', 776, 4151]
+                                ];
+
+                                var container = $('#example1');
+
+                                container.handsontable({
+                                    data: data,
+                                    minSpareRows: 1,
+                                    colHeaders: true,
+                                    contextMenu: true,
+                                    manualColumnResize: true,
+                                    formulas: true
+                                });
+
+                            </script>
+                        </div>
+                    </div>
+                </div>
+
+
             </div>
-          </div>
 
-          <div class="codeLayout">
-            <div class="pad">
-              <div class="jsFiddle">
-                <button class="jsFiddleLink" data-runfiddle="example1">Edit in jsFiddle</button>
-              </div>
-
-              <script data-jsfiddle="example1">
-                var data = [
-                  ["", "Maserati", "Mazda", "Mercedes", "Mini", "Mitsubishi"],
-                  [2009, 0, 2941, 4303, 354, 5814],
-                  [2010, 5, 2905, 2867, '=SUM(B3,2,3)', 5284],
-                  [2011, 4, 2517, 4822, 552, 6127],
-                  [2012, '=SUM(A1:A4)', '=SUM(B4,E2)', '=A1/B1', 776, 4151]
-                ];
-
-                var container = $('#example1');
-
-                container.handsontable({
-                  data: data,
-                  minSpareRows: 1,
-                  colHeaders: true,
-                  contextMenu: true,
-                  manualColumnResize: true,
-                  formulas: true
-                });
-
-              </script>
-            </div>
-          </div>
         </div>
 
-
-      </div>
-
     </div>
-
-  </div>
 </div>
 
 </body>
