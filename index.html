@@ -58,11 +58,11 @@
 
                             <script data-jsfiddle="example1">
                                 var data = [
-                                    ["", "Maserati", "Mazda", "Mercedes", "Mini", "Mitsubishi"],
+                                    ['=B2', "Maserati", "Mazda", "Mercedes", "Mini", "Mitsubishi"],
                                     [2009, 0, 2941, 4303, 354, 5814],
-                                    [2010, 5, 2905, 2867, '=SUM(B3,2,3)', 5284],
+                                    [2010, 5, 2905, 2867, '=SUM(B4,2,3)', 5284],
                                     [2011, 4, 2517, 4822, 552, 6127],
-                                    [2012, '=SUM(A1:A4)', '=SUM(B4,E2)', '=A1/B1', 776, 4151]
+                                    [2012, '=SUM(A2:A5)', '=SUM(B5,E3)', '=A2/B2', 12, 4151]
                                 ];
 
                                 var container = $('#example1');
@@ -71,6 +71,7 @@
                                     data: data,
                                     minSpareRows: 1,
                                     colHeaders: true,
+                                    rowHeaders: true,
                                     contextMenu: true,
                                     manualColumnResize: true,
                                     formulas: true
