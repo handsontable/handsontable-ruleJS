@@ -3,15 +3,15 @@ handsontable-RuleJS
 
 Plugin for handsontable using RuleJS library (formulas parser)
 
- 
-([demo](http://handsontable.github.io/handsontable-RuleJS/))
-
-
 ## Usage
+
+__Important:__ Few things have been modified in core handsontable and external libraries, so please use all files only from this repo.
+
 
 First, include the dependencies (all files you can find in `lib\` directory):
 
-*  Handsontable (js + css) (ver. 0.11.2). Few things have been modified in core handsontable, so please use version ht from this repo. 
+
+*  Handsontable (js + css) (ver. 0.11.2). 
 
 ```html
 <script src="lib/jquery.handsontable/jquery.handsontable.full.js"></script>
@@ -61,3 +61,8 @@ Then, run `handsontable()` constructor on an empty div and use `formulas:true` i
   });
 </script>
 ```
+
+
+## Demo
+
+  ([link](http://handsontable.github.io/handsontable-RuleJS/))
