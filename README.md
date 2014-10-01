@@ -11,7 +11,7 @@ Plugin for handsontable using RuleJS library (formulas parser)
 
 First, include the dependencies (all files you can find in `lib\` directory):
 
-1. Handsontable (js + css) (ver. 0.11.2). Few things have been modified in core handsontable, so please use version ht from this repo. 
+*  Handsontable (js + css) (ver. 0.11.2). Few things have been modified in core handsontable, so please use version ht from this repo. 
 
 ```html
 <script src="lib/jquery.handsontable/jquery.handsontable.full.js"></script>
@@ -19,7 +19,7 @@ First, include the dependencies (all files you can find in `lib\` directory):
 ```
 
 
-2. External libraries 
+*  External libraries 
 
 ```html
 <script src="lib/RuleJS/lib/lodash/lodash.js"></script>
@@ -33,7 +33,7 @@ First, include the dependencies (all files you can find in `lib\` directory):
 ```
 
 
-3. RuleJS library + plugin for handsontable
+*  RuleJS library + plugin for handsontable
 
 ```html
 <script src="lib/RuleJS/js/parser.js"></script>
