@@ -53,6 +53,7 @@ Then, run `handsontable()` constructor on an empty div and use `formulas:true` i
     [2011, 4, 2517, 4822, 552, 6127],
     [2012, '=SUM(A2:A5)', '=SUM(B5,E3)', '=A2/B2', 12, 4151]
   ];
+  
   $('#example1').handsontable({
     data: data,
     colHeaders: true,
@@ -63,6 +64,18 @@ Then, run `handsontable()` constructor on an empty div and use `formulas:true` i
 ```
 
 
+## Feature list
+
+
+* math functions: `+` `-` `*` `/` `^`
+* logical functions: `=` `>` `<` `>=` `<=` `<>` `NOT`
+* error handling: `#DIV/0!` `#ERROR` `#VALUE!` `#REF!` `#NAME?` `#N/A`
+* parser excel formulas ([list of supported formulas with links do documentation](http://handsontable.github.io/RuleJS/)
+* absolute cell references: `$A$1` `$A1` `A$1`
+* nested functions 
+* auto-fill 
+
+
 ## Demo
 
-  ([link](http://handsontable.github.io/handsontable-RuleJS/))
+[link to demo](http://handsontable.github.io/handsontable-RuleJS/)
