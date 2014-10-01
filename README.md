@@ -64,7 +64,7 @@ Then, run `handsontable()` constructor on an empty div and use `formulas:true` i
 ```
 
 
-## Feature list
+## Features
 
 
 * math functions: `+` `-` `*` `/` `^`
@@ -73,9 +73,9 @@ Then, run `handsontable()` constructor on an empty div and use `formulas:true` i
 * parser excel formulas ([list of supported formulas with links do documentation](http://handsontable.github.io/RuleJS/)
 * absolute cell references: `$A$1` `$A1` `A$1`
 * nested functions 
-* auto-fill 
+* simple auto-fill 
 
 
 ## Demo
 
-[link to demo](http://handsontable.github.io/handsontable-RuleJS/)
+[link](http://handsontable.github.io/handsontable-RuleJS/)
