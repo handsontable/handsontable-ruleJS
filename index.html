@@ -11,6 +11,8 @@
   <link data-jsfiddle="common" rel="stylesheet" media="screen" href="lib/jquery.handsontable/jquery.handsontable.full.css">
 
   <!-- ruleJS -->
+  <link rel="stylesheet" media="screen" href="lib/jquery.handsontable/handsontable.formula.css">
+
   <script src="lib/RuleJS/lib/lodash/lodash.js"></script>
   <script src="lib/RuleJS/lib/underscore.string/underscore.string.js"></script>
   <script src="lib/RuleJS/lib/moment/moment.js"></script>
@@ -48,6 +50,7 @@
               <p>The following demo uses <code>ruleJS</code> library to parse some formulas.<br>
                 To enable this feature, use setting <code>formulas: true</code></p>
               <div id="example1"></div>
+              <div id="example2"></div>
             </div>
           </div>
 
@@ -58,7 +61,7 @@
               </div>
               <script data-jsfiddle="example1">
 
-                var data = [
+                var data1 = [
                   ['=$B$2', "Maserati", "Mazda", "Mercedes", "Mini", "=A$1"],
                   [2009, 0, 2941, 4303, 354, 5814],
                   [2010, 5, 2905, 2867, '=SUM(A4,2,3)', '=$B1'],
@@ -66,16 +69,36 @@
                   [2012, '=SUM(A2:A5)', '=SUM(B5,E3)', '=A2/B2', 12, 4151]
                 ];
 
-                var container = $('#example1');
+                var data2 = [
+                  ['=$B$2', "Maserati", "Mazda", "Mercedes", "Mini", "=A$1"],
+                  [2009, 0, 2941, 4303, 354, 5814],
+                  [2010, 5, 2905, 2867, '=SUM(A4,2,3)', '=$B1'],
+                  [2011, 4, 2517, 4822, 552, 6127],
+                  [2012, '=SUM(A2:A5)', '=SUM(B5,E3)', '=A2/B2', 12, 4151]
+                ];
 
-                container.handsontable({
-                  data: data,
+                var container1 = $('#example1');
+
+                container1.handsontable({
+                  data: data1,
                   minSpareRows: 1,
                   colHeaders: true,
                   rowHeaders: true,
                   contextMenu: true,
                   manualColumnResize: true,
                   formulas: true
+                });
+
+                var container2 = $('#example2');
+
+                container2.handsontable({
+                  data: data2,
+                  minSpareRows: 1,
+                  colHeaders: true,
+                  rowHeaders: true,
+                  contextMenu: true,
+                  manualColumnResize: true,
+                  formulas: false
                 });
 
               </script>
