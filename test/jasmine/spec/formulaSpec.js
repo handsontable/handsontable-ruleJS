@@ -1,24 +1,26 @@
 describe('Formula', function () {
-  var id = 'testContainer';
+  var id = 'testContainer',
+      data = [];
 
   beforeEach(function () {
+    data = [
+      ['=$B$2', "Maserati", "Mazda", "Mercedes", "Mini", "=A$1"],
+      [2009, 0, 2941, '=E2', 354, 5814],
+      [2010, '=ROUND(SUM(PI(), 2), 2)', 2905, 2867, '=SUM(A4,2,3)', '=$B1'],
+      [2011, 4, 2517, 4822, 552, 6127],
+      [2012, '=SUM(A2:A5)', '=SUM(B5,E3)', '=A2/B2', 12, 4151]
+    ];
+
     this.$container = $('<div id="' + id + '"></div>').appendTo('body');
   });
 
   afterEach(function () {
+    data = [];
     if (this.$container) {
       destroy();
       this.$container.remove();
     }
   });
-
-  var data = [
-    ['=$B$2', "Maserati", "Mazda", "Mercedes", "Mini", "=A$1"],
-    [2009, 0, 2941, '=E2', 354, 5814],
-    [2010, '=ROUND(SUM(PI(), 2), 2)', 2905, 2867, '=SUM(A4,2,3)', '=$B1'],
-    [2011, 4, 2517, 4822, 552, 6127],
-    [2012, '=SUM(A2:A5)', '=SUM(B5,E3)', '=A2/B2', 12, 4151]
-  ];
 
   it('should parse formulas for formulas: true', function () {
     handsontable({
@@ -33,6 +35,21 @@ describe('Formula', function () {
     expect(htCore.find('tbody tr:eq(0) td:eq(0)').text()).toEqual("0");
     expect(htCore.find('tbody tr:eq(4) td:eq(1)').text()).toEqual("8042");
   });
+
+  it('should not parse formulas for formulas: false', function () {
+    handsontable({
+      data: data,
+      colHeaders: true,
+      rowHeaders: true,
+      formulas: false
+    });
+
+    var htCore = getHtCore();
+
+    expect(htCore.find('tbody tr:eq(0) td:eq(0)').text()).toEqual("=$B$2");
+    expect(htCore.find('tbody tr:eq(4) td:eq(1)').text()).toEqual("=SUM(A2:A5)");
+  });
+
 
   it('should insert formula into cell by passing \'=\' as the first character', function () {
     var hot = handsontable({
@@ -146,6 +163,45 @@ describe('Formula', function () {
     expect(htCore.find('tbody tr:eq(0) td:eq(2)').text()).toEqual(htCore.find('tbody tr:eq(0) td:eq(1)').text());
   });
 
+  it('should parse formulas when there are two instances ht and one has formulas enabled', function () {
+    var hot = handsontable({
+      data: data,
+      colHeaders: true,
+      rowHeaders: true,
+      formulas: true
+    });
+
+    var htCore = getHtCore();
+    hot.setDataAtCell(0, 2, '=$B1');
+
+    expect(htCore.find('tbody tr:eq(0) td:eq(2)').text()).toEqual(htCore.find('tbody tr:eq(0) td:eq(1)').text());
+
+    hot.setDataAtCell(0, 2, '=B$1');
+    expect(htCore.find('tbody tr:eq(0) td:eq(2)').text()).toEqual(htCore.find('tbody tr:eq(0) td:eq(1)').text());
+
+    hot.setDataAtCell(0, 2, '=$B$1');
+    expect(htCore.find('tbody tr:eq(0) td:eq(2)').text()).toEqual(htCore.find('tbody tr:eq(0) td:eq(1)').text());
+
+
+    this.$container2 = $('<div id="' + id + '-2"></div>').appendTo('body');
+    this.$container2.handsontable({
+      data: [
+        ['=$B$2', "Maserati", "Mazda", "Mercedes", "Mini", "=A$1"],
+        [2009, 0, 2941, '=E2', 354, 5814],
+        [2010, '=ROUND(SUM(PI(), 2), 2)', 2905, 2867, '=SUM(A4,2,3)', '=$B1'],
+        [2011, 4, 2517, 4822, 552, 6127],
+        [2012, '=SUM(A2:A5)', '=SUM(B5,E3)', '=A2/B2', 12, 4151]
+      ],
+      formulas: false
+    });
+    var hot2 = this.$container2.handsontable('getInstance');
+
+    expect(this.$container2.find('.htCore').find('tbody tr:eq(0) td:eq(2)').text()).toEqual('Mazda');
+
+    this.$container2.handsontable('destroy');
+    this.$container2.remove();
+  });
+
   describe('Errors', function () {
     it('should output #DIV/0! error if divided by zero', function () {
       var hot = handsontable({
@@ -179,12 +235,14 @@ describe('Formula', function () {
 
       expect(htCore.find('tbody tr:eq(0) td:eq(0)').text()).toEqual('#REF!');
       expect(htCore.find('tbody tr:eq(1) td:eq(1)').text()).toEqual('#REF!');
+      expect(htCore.find('tbody tr:eq(4) td:eq(3)').text()).toEqual('#REF!');
 
       hot.setDataAtCell(0, 0, '=C1');
       hot.setDataAtCell(1, 1, '=D2');
 
       expect(htCore.find('tbody tr:eq(0) td:eq(0)').text()).toEqual('Mazda');
       expect(htCore.find('tbody tr:eq(1) td:eq(1)').text()).toEqual('354');
+      expect(htCore.find('tbody tr:eq(4) td:eq(3)').text()).not.toEqual('#REF!');
 
       hot.setDataAtCell(0, 0, '=B2');
       hot.setDataAtCell(1, 1, '=A1');
@@ -673,5 +731,287 @@ describe('Formula', function () {
       expect(getDataAtCell(4, 4)).toBe('=SUM(E3,E4)');
     });
 
+    it('should override formula after auto fill', function () {
+      var hot = handsontable({
+        startRows: 5,
+        startCols: 5,
+        colHeaders: true,
+        rowHeaders: true,
+        formulas: true,
+        data: [
+          [1, 2, 3, 4, 5],
+          ['', '=B2', '', '', '=E1'],
+          [10, 20, 30, 40, 50],
+          [100, 200, 300, 400, 500],
+          ['', '', '', '', '=SUM(E3,E4)']
+        ]
+      });
+
+      var htCore = getHtCore();
+
+      expect(htCore.find('tbody tr:eq(1) td:eq(1)').text()).toEqual('#REF!');
+
+      selectCell(0, 1);
+      var ev = jQuery.Event('mousedown');
+      ev.target = this.$container.find('.wtBorder.corner')[0]; //fill handle
+
+      htCore.find('tbody tr:eq(0) td:eq(1)').trigger(ev);
+      htCore.find('tbody tr:eq(1) td:eq(1)').trigger('mouseenter');
+
+      ev = jQuery.Event('mouseup');
+      ev.target = this.$container.find('.wtBorder.corner')[0]; //fill handle
+      htCore.find('tbody tr:eq(1) td:eq(1)').trigger(ev);
+
+      expect(getDataAtCell(1, 1)).toBe(2);
+      expect(htCore.find('tbody tr:eq(1) td:eq(1)').text()).toEqual('2');
+
+      selectCell(0, 4);
+
+      var ev = jQuery.Event('mousedown');
+      ev.target = this.$container.find('.wtBorder.corner')[0]; //fill handle
+
+      htCore.find('tbody tr:eq(0) td:eq(4)').trigger(ev);
+      htCore.find('tbody tr:eq(1) td:eq(4)').trigger('mouseenter');
+      htCore.find('tbody tr:eq(2) td:eq(4)').trigger('mouseenter');
+      htCore.find('tbody tr:eq(3) td:eq(4)').trigger('mouseenter');
+      htCore.find('tbody tr:eq(4) td:eq(4)').trigger('mouseenter');
+
+      ev = jQuery.Event('mouseup');
+      ev.target = this.$container.find('.wtBorder.corner')[0]; //fill handle
+      htCore.find('tbody tr:eq(4) td:eq(4)').trigger(ev);
+
+      expect(getDataAtCell(0, 4)).toBe(5);
+      expect(getDataAtCell(4, 4)).toBe(5);
+      expect(htCore.find('tbody tr:eq(0) td:eq(4)').text()).toEqual('5');
+      expect(htCore.find('tbody tr:eq(4) td:eq(4)').text()).toEqual('5');
+    });
+  });
+
+  describe('alter - dynamic update', function () {
+    it('should update formulas after added column on the left', function () {
+      var hot = handsontable({
+        startRows: 5,
+        startCols: 5,
+        colHeaders: true,
+        rowHeaders: true,
+        formulas: true,
+        data: [
+          [1, 2, 3, 4, 5],
+          ['', '', '', '', '=E1'],
+          [10, 20, 30, 40, 50],
+          [100, 200, 300, 400, 500],
+          ['', '', '', '=SUM(A3:E3)', '']
+        ],
+        contextMenu: true
+      });
+
+      var htCore = getHtCore();
+
+      expect(htCore.find('tbody tr:eq(1) td:eq(4)').text()).toEqual('5');
+      expect(htCore.find('tbody tr:eq(4) td:eq(3)').text()).toEqual('150');
+
+      hot.selectCell(0, 1);
+
+      contextMenu();
+      $('.htContextMenu .ht_master .htCore').find('tr td:eq("3")').mousedown(); //insert column left
+
+      expect(hot.countCols()).toEqual(6);
+
+      expect(getDataAtCell(1, 4)).toBe('');
+      expect(getDataAtCell(1, 5)).toBe('=F1');
+      expect(htCore.find('tbody tr:eq(1) td:eq(4)').text()).toEqual('');
+      expect(htCore.find('tbody tr:eq(1) td:eq(5)').text()).toEqual('5');
+
+
+      expect(getDataAtCell(4, 3)).toBe('');
+      expect(getDataAtCell(4, 4)).toBe('=SUM(A3:F3)');
+      expect(htCore.find('tbody tr:eq(4) td:eq(3)').text()).toEqual('');
+      expect(htCore.find('tbody tr:eq(4) td:eq(4)').text()).toEqual('150');
+
+      hot.selectCell(0, 0);
+
+      contextMenu();
+      $('.htContextMenu .ht_master .htCore').find('tr td:eq("3")').mousedown(); //insert column left
+      expect(hot.countCols()).toEqual(7);
+
+      expect(getDataAtCell(1, 5)).toBe('');
+      expect(getDataAtCell(1, 6)).toBe('=G1');
+      expect(htCore.find('tbody tr:eq(1) td:eq(5)').text()).toEqual('');
+      expect(htCore.find('tbody tr:eq(1) td:eq(6)').text()).toEqual('5');
+
+      expect(getDataAtCell(4, 4)).toBe('');
+      expect(getDataAtCell(4, 5)).toBe('=SUM(B3:G3)');
+      expect(htCore.find('tbody tr:eq(4) td:eq(4)').text()).toEqual('');
+      expect(htCore.find('tbody tr:eq(4) td:eq(5)').text()).toEqual('150');
+    });
+
+    it('should update formulas after added column on the right', function () {
+      var hot = handsontable({
+        startRows: 5,
+        startCols: 5,
+        colHeaders: true,
+        rowHeaders: true,
+        formulas: true,
+        data: [
+          [1, 2, 3, 4, 5],
+          ['', '', '', '', '=E1'],
+          [10, 20, 30, 40, 50],
+          [100, 200, 300, 400, 500],
+          ['', '', '', '=SUM(A3:E3)', '']
+        ],
+        contextMenu: true
+      });
+
+      var htCore = getHtCore();
+
+      expect(htCore.find('tbody tr:eq(1) td:eq(4)').text()).toEqual('5');
+      expect(htCore.find('tbody tr:eq(4) td:eq(3)').text()).toEqual('150');
+
+      hot.selectCell(0, 3);
+
+      contextMenu();
+      $('.htContextMenu .ht_master .htCore').find('tr td:eq("4")').mousedown(); //insert column left
+
+      expect(hot.countCols()).toEqual(6);
+
+      expect(getDataAtCell(1, 4)).toBe(null);
+      expect(getDataAtCell(1, 5)).toBe('=F1');
+
+      expect(getDataAtCell(4, 3)).toBe('=SUM(A3:F3)');
+      expect(htCore.find('tbody tr:eq(4) td:eq(3)').text()).toEqual('150');
+
+      hot.selectCell(0, 0);
+
+      contextMenu();
+      $('.htContextMenu .ht_master .htCore').find('tr td:eq("4")').mousedown(); //insert column left
+      expect(hot.countCols()).toEqual(7);
+
+      expect(getDataAtCell(1, 5)).toBe(null);
+      expect(getDataAtCell(1, 6)).toBe('=G1');
+
+      expect(getDataAtCell(4, 3)).toBe('');
+      expect(getDataAtCell(4, 4)).toBe('=SUM(A3:G3)');
+
+      expect(htCore.find('tbody tr:eq(4) td:eq(3)').text()).toEqual('');
+      expect(htCore.find('tbody tr:eq(4) td:eq(4)').text()).toEqual('150');
+    });
+
+    it('should update formulas after added row above', function () {
+      var hot = handsontable({
+        startRows: 5,
+        startCols: 5,
+        colHeaders: true,
+        rowHeaders: true,
+        formulas: true,
+        data: [
+          [1, 2, 3, 4, 5],
+          ['', '', '', '', '=E1'],
+          [10, 20, 30, 40, 50],
+          [100, 200, 300, 400, 500],
+          ['', '', '', '=SUM(A3:E3)', '']
+        ],
+        contextMenu: true
+      });
+
+      var htCore = getHtCore();
+
+      expect(htCore.find('tbody tr:eq(1) td:eq(4)').text()).toEqual('5');
+      expect(htCore.find('tbody tr:eq(4) td:eq(3)').text()).toEqual('150');
+
+      hot.selectCell(0, 1);
+
+      contextMenu();
+      $('.htContextMenu .ht_master .htCore').find('tr td:eq("0")').mousedown(); //insert row above
+
+      expect(hot.countRows()).toEqual(6);
+
+      expect(getDataAtCell(1, 4)).toBe(5);
+      expect(getDataAtCell(2, 4)).toBe('=E2');
+
+      expect(htCore.find('tbody tr:eq(1) td:eq(4)').text()).toEqual('5');
+      expect(htCore.find('tbody tr:eq(2) td:eq(4)').text()).toEqual('5');
+
+
+      expect(getDataAtCell(4, 3)).toBe(400);
+      expect(getDataAtCell(5, 3)).toBe('=SUM(A4:E4)');
+      expect(htCore.find('tbody tr:eq(4) td:eq(3)').text()).toEqual('400');
+      expect(htCore.find('tbody tr:eq(5) td:eq(3)').text()).toEqual('150');
+
+      hot.selectCell(3, 0);
+
+      contextMenu();
+      $('.htContextMenu .ht_master .htCore').find('tr td:eq("0")').mousedown(); //insert row above
+      expect(hot.countRows()).toEqual(7);
+
+      expect(getDataAtCell(1, 4)).toBe(5);
+      expect(getDataAtCell(2, 4)).toBe('=E2');
+
+      expect(htCore.find('tbody tr:eq(1) td:eq(4)').text()).toEqual('5');
+      expect(htCore.find('tbody tr:eq(2) td:eq(4)').text()).toEqual('5');
+
+      expect(getDataAtCell(5, 3)).toBe(400);
+      expect(getDataAtCell(6, 3)).toBe('=SUM(A5:E5)');
+      expect(htCore.find('tbody tr:eq(5) td:eq(3)').text()).toEqual('400');
+      expect(htCore.find('tbody tr:eq(6) td:eq(3)').text()).toEqual('150');
+    });
+
+    it('should update formulas after added row below', function () {
+      var hot = handsontable({
+        startRows: 5,
+        startCols: 5,
+        colHeaders: true,
+        rowHeaders: true,
+        formulas: true,
+        data: [
+          [1, 2, 3, 4, 5],
+          ['', '', '', '', '=E1'],
+          [10, 20, 30, 40, 50],
+          [100, 200, 300, 400, 500],
+          ['', '', '', '=SUM(A3:E3)', '']
+        ],
+        contextMenu: true
+      });
+
+      var htCore = getHtCore();
+
+      expect(htCore.find('tbody tr:eq(1) td:eq(4)').text()).toEqual('5');
+      expect(htCore.find('tbody tr:eq(4) td:eq(3)').text()).toEqual('150');
+
+      hot.selectCell(0, 1);
+
+      contextMenu();
+      $('.htContextMenu .ht_master .htCore').find('tr td:eq("1")').mousedown(); //insert row above
+
+      expect(hot.countRows()).toEqual(6);
+
+      expect(getDataAtCell(1, 4)).toBe(null);
+      expect(getDataAtCell(2, 4)).toBe('=E1');
+
+      expect(htCore.find('tbody tr:eq(1) td:eq(4)').text()).toEqual('');
+      expect(htCore.find('tbody tr:eq(2) td:eq(4)').text()).toEqual('5');
+
+
+      expect(getDataAtCell(4, 3)).toBe(400);
+      expect(getDataAtCell(5, 3)).toBe('=SUM(A4:E4)');
+      expect(htCore.find('tbody tr:eq(4) td:eq(3)').text()).toEqual('400');
+      expect(htCore.find('tbody tr:eq(5) td:eq(3)').text()).toEqual('150');
+
+      hot.selectCell(3, 0);
+
+      contextMenu();
+      $('.htContextMenu .ht_master .htCore').find('tr td:eq("0")').mousedown(); //insert row above
+      expect(hot.countRows()).toEqual(7);
+
+      expect(getDataAtCell(1, 4)).toBe(null);
+      expect(getDataAtCell(2, 4)).toBe('=E1');
+
+      expect(htCore.find('tbody tr:eq(1) td:eq(4)').text()).toEqual('');
+      expect(htCore.find('tbody tr:eq(2) td:eq(4)').text()).toEqual('5');
+
+      expect(getDataAtCell(5, 3)).toBe(400);
+      expect(getDataAtCell(6, 3)).toBe('=SUM(A5:E5)');
+      expect(htCore.find('tbody tr:eq(5) td:eq(3)').text()).toEqual('400');
+      expect(htCore.find('tbody tr:eq(6) td:eq(3)').text()).toEqual('150');
+    });
   });
 });
