@@ -39,6 +39,7 @@ First, include the dependencies (all files you can find in `lib\` directory):
 <script src="lib/RuleJS/js/parser.js"></script>
 <script src="lib/RuleJS/js/ruleJS.js"></script>
 <script src="lib/jquery.handsontable/handsontable.formula.js"></script>
+<link rel="stylesheet" media="screen" href="lib/jquery.handsontable/handsontable.formula.css">
 ```
 
 Then, run `handsontable()` constructor on an empty div and use `formulas:true` in settings.
@@ -74,6 +75,8 @@ Then, run `handsontable()` constructor on an empty div and use `formulas:true` i
 * absolute cell references: `$A$1` `$A1` `A$1`
 * nested functions 
 * simple auto-fill 
+* dynamic updates - alter table
+* auto fill (simple)
 
 
 ## Demo
