@@ -11,7 +11,7 @@ __Important:__ Few things have been modified in core handsontable and external l
 First, include the dependencies (all files you can find in `lib\` directory):
 
 
-*  Handsontable (js + css) (ver. 0.11.2). 
+*  Handsontable (js + css) (ver. 0.11.4). 
 
 ```html
 <script src="lib/jquery.handsontable/jquery.handsontable.full.js"></script>

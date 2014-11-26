@@ -2,6 +2,22 @@ describe('Formula', function () {
   var id = 'testContainer',
       data = [];
 
+  function createBigData() {
+    var rows = []
+      , i
+      , j;
+
+    for (i = 0; i < 1000; i++) {
+      var row = [];
+      for (j = 0; j < 36; j++) {
+        row.push(Handsontable.helper.spreadsheetColumnLabel(j) + (i + 1));
+      }
+      rows.push(row);
+    }
+
+    return rows;
+  }
+
   beforeEach(function () {
     data = [
       ['=$B$2', "Maserati", "Mazda", "Mercedes", "Mini", "=A$1"],
@@ -53,7 +69,7 @@ describe('Formula', function () {
 
   it('should insert formula into cell by passing \'=\' as the first character', function () {
     var hot = handsontable({
-      data: data,
+      data: createBigData(),
       colHeaders: true,
       rowHeaders: true,
       formulas: true
@@ -69,6 +85,13 @@ describe('Formula', function () {
 
     expect(B1).toBe(formula);
     expect(htCore.find('tbody tr:eq(0) td:eq(1)').text()).toEqual(C1);
+
+    formula = '=AA1';
+    hot.setDataAtCell(0, 1, formula);
+    var AA1 = hot.getDataAtCell(0, 26);
+
+    expect(htCore.find('tbody tr:eq(0) td:eq(1)').text()).toEqual(AA1);
+
   });
 
   it('should show formula cell by pressing ENTER or F2', function () {
