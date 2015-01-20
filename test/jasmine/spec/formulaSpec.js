@@ -32,6 +32,7 @@ describe('Formula', function () {
 
   afterEach(function () {
     data = [];
+
     if (this.$container) {
       destroy();
       this.$container.remove();
@@ -65,7 +66,6 @@ describe('Formula', function () {
     expect(htCore.find('tbody tr:eq(0) td:eq(0)').text()).toEqual("=$B$2");
     expect(htCore.find('tbody tr:eq(4) td:eq(1)').text()).toEqual("=SUM(A2:A5)");
   });
-
 
   it('should insert formula into cell by passing \'=\' as the first character', function () {
     var hot = handsontable({
@@ -205,7 +205,6 @@ describe('Formula', function () {
     hot.setDataAtCell(0, 2, '=$B$1');
     expect(htCore.find('tbody tr:eq(0) td:eq(2)').text()).toEqual(htCore.find('tbody tr:eq(0) td:eq(1)').text());
 
-
     this.$container2 = $('<div id="' + id + '-2"></div>').appendTo('body');
     this.$container2.handsontable({
       data: [
@@ -333,30 +332,18 @@ describe('Formula', function () {
       hot.setDataAtCell(1, 0, '2');
 
       selectCell(0, 0);
-      keyDownUp('shift+arrow_down');
+      keyDown('shift+arrow_down');
 
-      var ev = jQuery.Event('mousedown');
-      ev.target = this.$container.find('.wtBorder.corner')[0]; //fill handle
-
-      htCore.find('tr:eq(1) td:eq(0)').trigger(ev);
-
-      htCore.find('tr:eq(2) td:eq(0)').trigger('mouseenter');
-      htCore.find('tr:eq(3) td:eq(0)').trigger('mouseenter');
-      htCore.find('tr:eq(4) td:eq(0)').trigger('mouseenter');
-      htCore.find('tr:eq(5) td:eq(0)').trigger('mouseenter');
-
-      ev = jQuery.Event('mouseup');
-      ev.target = this.$container.find('.wtBorder.corner')[0]; //fill handle
-      htCore.find('tr:eq(5) td:eq(0)').trigger(ev);
+      this.$container.find('.wtBorder.area.corner').simulate('mousedown');
+      this.$container.find('tr:last-child td:eq(0)').simulate('mouseover');
+      this.$container.find('.wtBorder.area.corner').simulate('mouseup');
 
       expect(htCore.find('tbody tr:eq(0) td:eq(0)').text()).toEqual('1');
       expect(htCore.find('tbody tr:eq(1) td:eq(0)').text()).toEqual('2');
       expect(htCore.find('tbody tr:eq(2) td:eq(0)').text()).toEqual('3');
       expect(htCore.find('tbody tr:eq(3) td:eq(0)').text()).toEqual('4');
       expect(htCore.find('tbody tr:eq(4) td:eq(0)').text()).toEqual('5');
-
     });
-
 
     it('should calculate delta and add values to prev cells if selected 2 or more cells, shift+arrow_up', function () {
       var hot = handsontable({
@@ -375,27 +362,15 @@ describe('Formula', function () {
       selectCell(4, 0);
       keyDownUp('shift+arrow_up');
 
-      var ev = jQuery.Event('mousedown');
-      ev.target = this.$container.find('.wtBorder.corner')[0]; //fill handle
-
-      htCore.find('tr:eq(5) td:eq(0)').trigger(ev);
-
-      htCore.find('tr:eq(4) td:eq(0)').trigger('mouseenter');
-      htCore.find('tr:eq(3) td:eq(0)').trigger('mouseenter');
-      htCore.find('tr:eq(2) td:eq(0)').trigger('mouseenter');
-      htCore.find('tr:eq(1) td:eq(0)').trigger('mouseenter');
-//      htCore.find('tr:eq(0) td:eq(0)').trigger('mouseenter');
-
-      ev = jQuery.Event('mouseup');
-      ev.target = this.$container.find('.wtBorder.corner')[0]; //fill handle
-      htCore.find('tbody tr:eq(0) td:eq(0)').trigger(ev);
+      this.$container.find('.wtBorder.area.corner').simulate('mousedown');
+      this.$container.find('tr:first-child td:eq(0)').simulate('mouseover');
+      this.$container.find('.wtBorder.area.corner').simulate('mouseup');
 
       expect(htCore.find('tbody tr:eq(0) td:eq(0)').text()).toEqual('-2');
       expect(htCore.find('tbody tr:eq(1) td:eq(0)').text()).toEqual('-1');
       expect(htCore.find('tbody tr:eq(2) td:eq(0)').text()).toEqual('0');
       expect(htCore.find('tbody tr:eq(3) td:eq(0)').text()).toEqual('1');
       expect(htCore.find('tbody tr:eq(4) td:eq(0)').text()).toEqual('2');
-
     });
 
     it('should calculate delta and add values to next cells if selected 2 or more cells, shift+arrow_right', function () {
@@ -415,26 +390,15 @@ describe('Formula', function () {
       selectCell(0, 0);
       keyDownUp('shift+arrow_right');
 
-      var ev = jQuery.Event('mousedown');
-      ev.target = this.$container.find('.wtBorder.corner')[0]; //fill handle
-
-      htCore.find('tbody tr:eq(0) td:eq(0)').trigger(ev);
-
-      htCore.find('tbody tr:eq(0) td:eq(1)').trigger('mouseenter');
-      htCore.find('tbody tr:eq(0) td:eq(2)').trigger('mouseenter');
-      htCore.find('tbody tr:eq(0) td:eq(3)').trigger('mouseenter');
-      htCore.find('tbody tr:eq(0) td:eq(4)').trigger('mouseenter');
-
-      ev = jQuery.Event('mouseup');
-      ev.target = this.$container.find('.wtBorder.corner')[0]; //fill handle
-      htCore.find('tr:eq(1) td:eq(4)').trigger(ev);
+      this.$container.find('.wtBorder.area.corner').simulate('mousedown');
+      this.$container.find('tr:eq(1) td:last-child').simulate('mouseover');
+      this.$container.find('.wtBorder.area.corner').simulate('mouseup');
 
       expect(htCore.find('tbody tr:eq(0) td:eq(0)').text()).toEqual('1');
       expect(htCore.find('tbody tr:eq(0) td:eq(1)').text()).toEqual('2');
       expect(htCore.find('tbody tr:eq(0) td:eq(2)').text()).toEqual('3');
       expect(htCore.find('tbody tr:eq(0) td:eq(3)').text()).toEqual('4');
       expect(htCore.find('tbody tr:eq(0) td:eq(4)').text()).toEqual('5');
-
     });
 
     it('should calculate delta and add values to prev cells if selected 2 or more cells, shift+arrow_left', function () {
@@ -454,26 +418,15 @@ describe('Formula', function () {
       selectCell(0, 4);
       keyDownUp('shift+arrow_left');
 
-      var ev = jQuery.Event('mousedown');
-      ev.target = this.$container.find('.wtBorder.corner')[0]; //fill handle
-
-      htCore.find('tbody tr:eq(0) td:eq(4)').trigger(ev);
-
-      htCore.find('tbody tr:eq(0) td:eq(3)').trigger('mouseenter');
-      htCore.find('tbody tr:eq(0) td:eq(2)').trigger('mouseenter');
-      htCore.find('tbody tr:eq(0) td:eq(1)').trigger('mouseenter');
-      htCore.find('tbody tr:eq(0) td:eq(0)').trigger('mouseenter');
-
-      ev = jQuery.Event('mouseup');
-      ev.target = this.$container.find('.wtBorder.corner')[0]; //fill handle
-      htCore.find('tbody tr:eq(0) td:eq(0)').trigger(ev);
+      this.$container.find('.wtBorder.area.corner').simulate('mousedown');
+      this.$container.find('tr:eq(1) td:eq(0)').simulate('mouseover');
+      this.$container.find('.wtBorder.area.corner').simulate('mouseup');
 
       expect(htCore.find('tbody tr:eq(0) td:eq(0)').text()).toEqual('-2');
       expect(htCore.find('tbody tr:eq(0) td:eq(1)').text()).toEqual('-1');
       expect(htCore.find('tbody tr:eq(0) td:eq(2)').text()).toEqual('0');
       expect(htCore.find('tbody tr:eq(0) td:eq(3)').text()).toEqual('1');
       expect(htCore.find('tbody tr:eq(0) td:eq(4)').text()).toEqual('2');
-
     });
 
     it('should update formula, shift+arrow_down', function () {
@@ -496,19 +449,9 @@ describe('Formula', function () {
 
       selectCell(0, 1);
 
-      var ev = jQuery.Event('mousedown');
-      ev.target = this.$container.find('.wtBorder.corner')[0]; //fill handle
-
-      htCore.find('tbody tr:eq(0) td:eq(1)').trigger(ev);
-
-      htCore.find('tbody tr:eq(1) td:eq(1)').trigger('mouseenter');
-      htCore.find('tbody tr:eq(2) td:eq(1)').trigger('mouseenter');
-      htCore.find('tbody tr:eq(3) td:eq(1)').trigger('mouseenter');
-      htCore.find('tbody tr:eq(4) td:eq(1)').trigger('mouseenter');
-
-      ev = jQuery.Event('mouseup');
-      ev.target = this.$container.find('.wtBorder.corner')[0]; //fill handle
-      htCore.find('tbody tr:eq(4) td:eq(1)').trigger(ev);
+      this.$container.find('.wtBorder.area.corner').simulate('mousedown');
+      this.$container.find('tr:last-child td:eq(1)').simulate('mouseover');
+      this.$container.find('.wtBorder.area.corner').simulate('mouseup');
 
       expect(htCore.find('tbody tr:eq(0) td:eq(1)').text()).toEqual('1');
       expect(htCore.find('tbody tr:eq(1) td:eq(1)').text()).toEqual('2');
@@ -518,19 +461,9 @@ describe('Formula', function () {
 
       selectCell(0, 4);
 
-      var ev = jQuery.Event('mousedown');
-      ev.target = this.$container.find('.wtBorder.corner')[0]; //fill handle
-
-      htCore.find('tbody tr:eq(0) td:eq(4)').trigger(ev);
-
-      htCore.find('tbody tr:eq(1) td:eq(4)').trigger('mouseenter');
-      htCore.find('tbody tr:eq(2) td:eq(4)').trigger('mouseenter');
-      htCore.find('tbody tr:eq(3) td:eq(4)').trigger('mouseenter');
-      htCore.find('tbody tr:eq(4) td:eq(4)').trigger('mouseenter');
-
-      ev = jQuery.Event('mouseup');
-      ev.target = this.$container.find('.wtBorder.corner')[0]; //fill handle
-      htCore.find('tbody tr:eq(4) td:eq(4)').trigger(ev);
+      this.$container.find('.wtBorder.area.corner').simulate('mousedown');
+      this.$container.find('tr:last-child td:eq(4)').simulate('mouseover');
+      this.$container.find('.wtBorder.area.corner').simulate('mouseup');
 
       expect(htCore.find('tbody tr:eq(0) td:eq(4)').text()).toEqual('112');
       expect(htCore.find('tbody tr:eq(1) td:eq(4)').text()).toEqual('224');
@@ -565,19 +498,23 @@ describe('Formula', function () {
 
       selectCell(4, 1);
 
-      var ev = jQuery.Event('mousedown');
-      ev.target = this.$container.find('.wtBorder.corner')[0]; //fill handle
+      this.$container.find('.wtBorder.area.corner').simulate('mousedown');
+      this.$container.find('tr:first-child td:eq(1)').simulate('mouseover');
+      this.$container.find('.wtBorder.area.corner').simulate('mouseup');
 
-      htCore.find('tbody tr:eq(4) td:eq(1)').trigger(ev);
-
-      htCore.find('tbody tr:eq(3) td:eq(1)').trigger('mouseenter');
-      htCore.find('tbody tr:eq(2) td:eq(1)').trigger('mouseenter');
-      htCore.find('tbody tr:eq(1) td:eq(1)').trigger('mouseenter');
-      htCore.find('tbody tr:eq(0) td:eq(1)').trigger('mouseenter');
-
-      ev = jQuery.Event('mouseup');
-      ev.target = this.$container.find('.wtBorder.corner')[0]; //fill handle
-      htCore.find('tbody tr:eq(0) td:eq(1)').trigger(ev);
+//      var ev = jQuery.Event('mousedown');
+//      ev.target = this.$container.find('.wtBorder.corner')[0]; //fill handle
+//
+//      htCore.find('tbody tr:eq(4) td:eq(1)').trigger(ev);
+//
+//      htCore.find('tbody tr:eq(3) td:eq(1)').trigger('mouseenter');
+//      htCore.find('tbody tr:eq(2) td:eq(1)').trigger('mouseenter');
+//      htCore.find('tbody tr:eq(1) td:eq(1)').trigger('mouseenter');
+//      htCore.find('tbody tr:eq(0) td:eq(1)').trigger('mouseenter');
+//
+//      ev = jQuery.Event('mouseup');
+//      ev.target = this.$container.find('.wtBorder.corner')[0]; //fill handle
+//      htCore.find('tbody tr:eq(0) td:eq(1)').trigger(ev);
 
       expect(htCore.find('tbody tr:eq(0) td:eq(1)').text()).toEqual('1');
       expect(htCore.find('tbody tr:eq(1) td:eq(1)').text()).toEqual('2');
@@ -587,20 +524,9 @@ describe('Formula', function () {
 
       selectCell(4, 4);
 
-      var ev = jQuery.Event('mousedown');
-      ev.target = this.$container.find('.wtBorder.corner')[0]; //fill handle
-
-      htCore.find('tbody tr:eq(4) td:eq(4)').trigger(ev);
-
-      htCore.find('tbody tr:eq(4) td:eq(4)').trigger('mouseenter');
-      htCore.find('tbody tr:eq(3) td:eq(4)').trigger('mouseenter');
-      htCore.find('tbody tr:eq(2) td:eq(4)').trigger('mouseenter');
-      htCore.find('tbody tr:eq(1) td:eq(4)').trigger('mouseenter');
-      htCore.find('tbody tr:eq(0) td:eq(4)').trigger('mouseenter');
-
-      ev = jQuery.Event('mouseup');
-      ev.target = this.$container.find('.wtBorder.corner')[0]; //fill handle
-      htCore.find('tbody tr:eq(0) td:eq(4)').trigger(ev);
+      this.$container.find('.wtBorder.area.corner').simulate('mousedown');
+      this.$container.find('tr:first-child td:eq(4)').simulate('mouseover');
+      this.$container.find('.wtBorder.area.corner').simulate('mouseup');
 
       expect(htCore.find('tbody tr:eq(0) td:eq(4)').text()).toEqual('112');
       expect(htCore.find('tbody tr:eq(1) td:eq(4)').text()).toEqual('224');
@@ -635,19 +561,9 @@ describe('Formula', function () {
 
       selectCell(1, 0);
 
-      var ev = jQuery.Event('mousedown');
-      ev.target = this.$container.find('.wtBorder.corner')[0]; //fill handle
-
-      htCore.find('tbody tr:eq(1) td:eq(0)').trigger(ev);
-
-      htCore.find('tbody tr:eq(1) td:eq(1)').trigger('mouseenter');
-      htCore.find('tbody tr:eq(1) td:eq(2)').trigger('mouseenter');
-      htCore.find('tbody tr:eq(1) td:eq(3)').trigger('mouseenter');
-      htCore.find('tbody tr:eq(1) td:eq(4)').trigger('mouseenter');
-
-      ev = jQuery.Event('mouseup');
-      ev.target = this.$container.find('.wtBorder.corner')[0]; //fill handle
-      htCore.find('tbody tr:eq(1) td:eq(4)').trigger(ev);
+      this.$container.find('.wtBorder.area.corner').simulate('mousedown');
+      this.$container.find('tr:eq(2) td:eq(4)').simulate('mouseover');
+      this.$container.find('.wtBorder.area.corner').simulate('mouseup');
 
       expect(htCore.find('tbody tr:eq(1) td:eq(0)').text()).toEqual('1');
       expect(htCore.find('tbody tr:eq(1) td:eq(1)').text()).toEqual('2');
@@ -657,19 +573,9 @@ describe('Formula', function () {
 
       selectCell(4, 0);
 
-      var ev = jQuery.Event('mousedown');
-      ev.target = this.$container.find('.wtBorder.corner')[0]; //fill handle
-
-      htCore.find('tbody tr:eq(4) td:eq(0)').trigger(ev);
-
-      htCore.find('tbody tr:eq(4) td:eq(1)').trigger('mouseenter');
-      htCore.find('tbody tr:eq(4) td:eq(2)').trigger('mouseenter');
-      htCore.find('tbody tr:eq(4) td:eq(3)').trigger('mouseenter');
-      htCore.find('tbody tr:eq(4) td:eq(4)').trigger('mouseenter');
-
-      ev = jQuery.Event('mouseup');
-      ev.target = this.$container.find('.wtBorder.corner')[0]; //fill handle
-      htCore.find('tbody tr:eq(4) td:eq(4)').trigger(ev);
+      this.$container.find('.wtBorder.area.corner').simulate('mousedown');
+      this.$container.find('tr:eq(5) td:eq(4)').simulate('mouseover');
+      this.$container.find('.wtBorder.area.corner').simulate('mouseup');
 
       expect(htCore.find('tbody tr:eq(4) td:eq(0)').text()).toEqual('110');
       expect(htCore.find('tbody tr:eq(4) td:eq(1)').text()).toEqual('220');
@@ -704,19 +610,9 @@ describe('Formula', function () {
 
       selectCell(1, 4);
 
-      var ev = jQuery.Event('mousedown');
-      ev.target = this.$container.find('.wtBorder.corner')[0]; //fill handle
-
-      htCore.find('tbody tr:eq(1) td:eq(4)').trigger(ev);
-
-      htCore.find('tbody tr:eq(1) td:eq(3)').trigger('mouseenter');
-      htCore.find('tbody tr:eq(1) td:eq(2)').trigger('mouseenter');
-      htCore.find('tbody tr:eq(1) td:eq(1)').trigger('mouseenter');
-      htCore.find('tbody tr:eq(1) td:eq(0)').trigger('mouseenter');
-
-      ev = jQuery.Event('mouseup');
-      ev.target = this.$container.find('.wtBorder.corner')[0]; //fill handle
-      htCore.find('tbody tr:eq(1) td:eq(0)').trigger(ev);
+      this.$container.find('.wtBorder.area.corner').simulate('mousedown');
+      this.$container.find('tr:eq(2) td:eq(0)').simulate('mouseover');
+      this.$container.find('.wtBorder.area.corner').simulate('mouseup');
 
       expect(htCore.find('tbody tr:eq(1) td:eq(0)').text()).toEqual('1');
       expect(htCore.find('tbody tr:eq(1) td:eq(1)').text()).toEqual('2');
@@ -726,20 +622,9 @@ describe('Formula', function () {
 
       selectCell(4, 4);
 
-      var ev = jQuery.Event('mousedown');
-      ev.target = this.$container.find('.wtBorder.corner')[0]; //fill handle
-
-      htCore.find('tbody tr:eq(4) td:eq(4)').trigger(ev);
-
-      htCore.find('tbody tr:eq(4) td:eq(3)').trigger('mouseenter');
-      htCore.find('tbody tr:eq(4) td:eq(2)').trigger('mouseenter');
-      htCore.find('tbody tr:eq(4) td:eq(1)').trigger('mouseenter');
-      htCore.find('tbody tr:eq(4) td:eq(0)').trigger('mouseenter');
-
-      ev = jQuery.Event('mouseup');
-      ev.target = this.$container.find('.wtBorder.corner')[0]; //fill handle
-      htCore.find('tbody tr:eq(4) td:eq(0)').trigger(ev);
-
+      this.$container.find('.wtBorder.area.corner').simulate('mousedown');
+      this.$container.find('tr:eq(5) td:eq(0)').simulate('mouseover');
+      this.$container.find('.wtBorder.area.corner').simulate('mouseup');
 
       expect(htCore.find('tbody tr:eq(4) td:eq(0)').text()).toEqual('110');
       expect(htCore.find('tbody tr:eq(4) td:eq(1)').text()).toEqual('220');
@@ -775,33 +660,19 @@ describe('Formula', function () {
       expect(htCore.find('tbody tr:eq(1) td:eq(1)').text()).toEqual('#REF!');
 
       selectCell(0, 1);
-      var ev = jQuery.Event('mousedown');
-      ev.target = this.$container.find('.wtBorder.corner')[0]; //fill handle
 
-      htCore.find('tbody tr:eq(0) td:eq(1)').trigger(ev);
-      htCore.find('tbody tr:eq(1) td:eq(1)').trigger('mouseenter');
-
-      ev = jQuery.Event('mouseup');
-      ev.target = this.$container.find('.wtBorder.corner')[0]; //fill handle
-      htCore.find('tbody tr:eq(1) td:eq(1)').trigger(ev);
+      this.$container.find('.wtBorder.area.corner').simulate('mousedown');
+      this.$container.find('tr:eq(2) td:eq(1)').simulate('mouseover');
+      this.$container.find('.wtBorder.area.corner').simulate('mouseup');
 
       expect(getDataAtCell(1, 1)).toBe(2);
       expect(htCore.find('tbody tr:eq(1) td:eq(1)').text()).toEqual('2');
 
       selectCell(0, 4);
 
-      var ev = jQuery.Event('mousedown');
-      ev.target = this.$container.find('.wtBorder.corner')[0]; //fill handle
-
-      htCore.find('tbody tr:eq(0) td:eq(4)').trigger(ev);
-      htCore.find('tbody tr:eq(1) td:eq(4)').trigger('mouseenter');
-      htCore.find('tbody tr:eq(2) td:eq(4)').trigger('mouseenter');
-      htCore.find('tbody tr:eq(3) td:eq(4)').trigger('mouseenter');
-      htCore.find('tbody tr:eq(4) td:eq(4)').trigger('mouseenter');
-
-      ev = jQuery.Event('mouseup');
-      ev.target = this.$container.find('.wtBorder.corner')[0]; //fill handle
-      htCore.find('tbody tr:eq(4) td:eq(4)').trigger(ev);
+      this.$container.find('.wtBorder.area.corner').simulate('mousedown');
+      this.$container.find('tr:eq(5) td:eq(4)').simulate('mouseover');
+      this.$container.find('.wtBorder.area.corner').simulate('mouseup');
 
       expect(getDataAtCell(0, 4)).toBe(5);
       expect(getDataAtCell(4, 4)).toBe(5);
@@ -836,7 +707,7 @@ describe('Formula', function () {
       hot.selectCell(0, 1);
 
       contextMenu();
-      $('.htContextMenu .ht_master .htCore').find('tr td:eq("3")').mousedown(); //insert column left
+      $('.htContextMenu .ht_master .htCore').find('tr td:eq("3")').simulate('mousedown'); //insert column left
 
       expect(hot.countCols()).toEqual(6);
 
@@ -854,7 +725,7 @@ describe('Formula', function () {
       hot.selectCell(0, 0);
 
       contextMenu();
-      $('.htContextMenu .ht_master .htCore').find('tr td:eq("3")').mousedown(); //insert column left
+      $('.htContextMenu .ht_master .htCore').find('tr td:eq("3")').simulate('mousedown'); //insert column left
       expect(hot.countCols()).toEqual(7);
 
       expect(getDataAtCell(1, 5)).toBe('');
@@ -893,7 +764,7 @@ describe('Formula', function () {
       hot.selectCell(0, 3);
 
       contextMenu();
-      $('.htContextMenu .ht_master .htCore').find('tr td:eq("4")').mousedown(); //insert column left
+      $('.htContextMenu .ht_master .htCore').find('tr td:eq("4")').simulate('mousedown'); //insert column left
 
       expect(hot.countCols()).toEqual(6);
 
@@ -906,7 +777,7 @@ describe('Formula', function () {
       hot.selectCell(0, 0);
 
       contextMenu();
-      $('.htContextMenu .ht_master .htCore').find('tr td:eq("4")').mousedown(); //insert column left
+      $('.htContextMenu .ht_master .htCore').find('tr td:eq("4")').simulate('mousedown'); //insert column left
       expect(hot.countCols()).toEqual(7);
 
       expect(getDataAtCell(1, 5)).toBe(null);
@@ -944,7 +815,7 @@ describe('Formula', function () {
       hot.selectCell(0, 1);
 
       contextMenu();
-      $('.htContextMenu .ht_master .htCore').find('tr td:eq("0")').mousedown(); //insert row above
+      $('.htContextMenu .ht_master .htCore').find('tr td:eq("0")').simulate('mousedown'); //insert row above
 
       expect(hot.countRows()).toEqual(6);
 
@@ -963,7 +834,7 @@ describe('Formula', function () {
       hot.selectCell(3, 0);
 
       contextMenu();
-      $('.htContextMenu .ht_master .htCore').find('tr td:eq("0")').mousedown(); //insert row above
+      $('.htContextMenu .ht_master .htCore').find('tr td:eq("0")').simulate('mousedown'); //insert row above
       expect(hot.countRows()).toEqual(7);
 
       expect(getDataAtCell(1, 4)).toBe(5);
@@ -1003,7 +874,7 @@ describe('Formula', function () {
       hot.selectCell(0, 1);
 
       contextMenu();
-      $('.htContextMenu .ht_master .htCore').find('tr td:eq("1")').mousedown(); //insert row above
+      $('.htContextMenu .ht_master .htCore').find('tr td:eq("1")').simulate('mousedown'); //insert row above
 
       expect(hot.countRows()).toEqual(6);
 
@@ -1022,7 +893,7 @@ describe('Formula', function () {
       hot.selectCell(3, 0);
 
       contextMenu();
-      $('.htContextMenu .ht_master .htCore').find('tr td:eq("0")').mousedown(); //insert row above
+      $('.htContextMenu .ht_master .htCore').find('tr td:eq("0")').simulate('mousedown'); //insert row above
       expect(hot.countRows()).toEqual(7);
 
       expect(getDataAtCell(1, 4)).toBe(null);
