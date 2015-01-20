@@ -5,7 +5,7 @@ Plugin for handsontable using RuleJS library (formulas parser)
 
 ## Usage
 
-__Important:__ Few things have been modified in core handsontable and external libraries, so please use all files only from this repo.
+__Important:__ Few things have been modified in external libraries, so please use all library files only from this repo.
 
 
 First, include the dependencies (all files you can find in `lib\` directory):
