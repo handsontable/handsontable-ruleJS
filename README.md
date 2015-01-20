@@ -11,11 +11,11 @@ __Important:__ Few things have been modified in core handsontable and external l
 First, include the dependencies (all files you can find in `lib\` directory):
 
 
-*  Handsontable (js + css) (ver. 0.11.4). 
+*  Handsontable (js + css) (ver. 0.12.3). 
 
 ```html
-<script src="lib/jquery.handsontable/jquery.handsontable.full.js"></script>
-<link rel="stylesheet" media="screen" href="lib/jquery.handsontable/jquery.handsontable.full.css">
+<script src="lib/handsontable/handsontable.full.js"></script>
+<link rel="stylesheet" media="screen" href="lib/handsontable/handsontable.full.css">
 ```
 
 
@@ -38,8 +38,8 @@ First, include the dependencies (all files you can find in `lib\` directory):
 ```html
 <script src="lib/RuleJS/js/parser.js"></script>
 <script src="lib/RuleJS/js/ruleJS.js"></script>
-<script src="lib/jquery.handsontable/handsontable.formula.js"></script>
-<link rel="stylesheet" media="screen" href="lib/jquery.handsontable/handsontable.formula.css">
+<script src="lib/handsontable/handsontable.formula.js"></script>
+<link rel="stylesheet" media="screen" href="lib/handsontable/handsontable.formula.css">
 ```
 
 Then, run `handsontable()` constructor on an empty div and use `formulas:true` in settings.
