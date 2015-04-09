@@ -57,8 +57,10 @@
             // parse formula
             var newValue = instance.plugin.parse(formula, {row: row, col: col, id: cellId});
 
+            needUpdate = (newValue.error === '#NEED_UPDATE');
+
             // update item value and error
-            instance.plugin.matrix.updateItem(currentItem, {formula: formula, value: newValue.result, error: newValue.error, needUpdate: false});
+            instance.plugin.matrix.updateItem(currentItem, {formula: formula, value: newValue.result, error: newValue.error, needUpdate: needUpdate});
 
             error = newValue.error;
             result = newValue.result;
