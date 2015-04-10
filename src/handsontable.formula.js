@@ -3,8 +3,18 @@
 
   function HandsontableFormula() {
 
+    var isFormula = function (value) {
+      if (value) {
+        if (value[0] === '=') {
+          return true;
+        }
+      }
+
+      return false;
+    };
+
     var formulaRenderer = function (instance, TD, row, col, prop, value, cellProperties) {
-      if (instance.formulasEnabled) {
+      if (instance.formulasEnabled && isFormula(value)) {
         // translate coordinates into cellId
         var cellId = instance.plugin.utils.translateCellCoords({row: row, col: col}),
           prevFormula = null,
@@ -57,6 +67,7 @@
             // parse formula
             var newValue = instance.plugin.parse(formula, {row: row, col: col, id: cellId});
 
+            // check if update needed
             needUpdate = (newValue.error === '#NEED_UPDATE');
 
             // update item value and error
