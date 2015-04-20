@@ -1,7 +1,7 @@
 {
   "name": "ruleJS",
   "description": "Javascript parser excel-like formulas",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "main": [
     "./dist/full/ruleJS.all.full.js"
   ],
@@ -29,13 +29,13 @@
     "test"
   ],
   "homepage": "https://github.com/handsontable/ruleJS",
-  "_release": "0.0.3",
+  "_release": "0.0.4",
   "_resolution": {
     "type": "version",
-    "tag": "0.0.3",
-    "commit": "b404f4f7d757ac929afc885fcf026b14ff4dc9c3"
+    "tag": "0.0.4",
+    "commit": "8a35eff77583d66aa84962766676cad7f784f4af"
   },
   "_source": "git://github.com/handsontable/ruleJS.git",
-  "_target": "0.0.3",
+  "_target": "0.0.4",
   "_originalSource": "ruleJS"
 }
