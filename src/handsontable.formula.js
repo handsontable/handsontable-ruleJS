@@ -102,7 +102,11 @@
       }
 
       // apply changes
-      textCell.renderer.apply(this, [instance, TD, row, col, prop, value, cellProperties]);
+      if (cellProperties.type === 'numeric') {
+        numericCell.renderer.apply(this, [instance, TD, row, col, prop, value, cellProperties]);
+      } else {
+        textCell.renderer.apply(this, [instance, TD, row, col, prop, value, cellProperties]);
+      }
     };
 
     var afterChange = function (changes, source) {
@@ -119,9 +123,9 @@
         changes.forEach(function (item) {
 
           var row = item[0],
-              col = item[1],
-              prevValue = item[2],
-              value = item[3];
+            col = item[1],
+            prevValue = item[2],
+            value = item[3];
 
           var cellId = instance.plugin.utils.translateCellCoords({row: row, col: col});
 
@@ -151,11 +155,11 @@
       var instance = this;
 
       var r = index.row,
-          c = index.col,
-          value = data[r][c],
-          delta = 0,
-          rlength = data.length, // rows
-          clength = data ? data[0].length : 0; //cols
+        c = index.col,
+        value = data[r][c],
+        delta = 0,
+        rlength = data.length, // rows
+        clength = data ? data[0].length : 0; //cols
 
       if (value[0] === '=') { // formula
 
@@ -176,8 +180,8 @@
         if (rlength >= 2 || clength >= 2) {
 
           var newValue = instance.plugin.helper.number(value),
-              ii,
-              start;
+            ii,
+            start;
 
           if (instance.plugin.utils.isNumber(newValue)) {
 
@@ -254,14 +258,14 @@
       }
 
       var direction = (selectedRow >= row) ? 'before' : 'after',
-          items = instance.plugin.matrix.getRefItemsToRow(row),
-          counter = 1,
-          changes = [];
+        items = instance.plugin.matrix.getRefItemsToRow(row),
+        counter = 1,
+        changes = [];
 
       items.forEach(function (id) {
         var item = instance.plugin.matrix.getItem(id),
-            formula = instance.plugin.utils.changeFormula(item.formula, 1, {row: row}), // update formula if needed
-            newId = id;
+          formula = instance.plugin.utils.changeFormula(item.formula, 1, {row: row}), // update formula if needed
+          newId = id;
 
         if (formula !== item.formula) { // formula updated
 
@@ -301,15 +305,15 @@
       }
 
       var items = instance.plugin.matrix.getRefItemsToColumn(col),
-          counter = 1,
-          direction = (selectedCol >= col) ? 'before' : 'after',
-          changes = [];
+        counter = 1,
+        direction = (selectedCol >= col) ? 'before' : 'after',
+        changes = [];
 
       items.forEach(function (id) {
 
         var item = instance.plugin.matrix.getItem(id),
-            formula = instance.plugin.utils.changeFormula(item.formula, 1, {col: col}), // update formula if needed
-            newId = id;
+          formula = instance.plugin.utils.changeFormula(item.formula, 1, {col: col}), // update formula if needed
+          newId = id;
 
         if (formula !== item.formula) { // formula updated
 
@@ -350,6 +354,11 @@
       editor: Handsontable.editors.TextEditor
     };
 
+    var numericCell = {
+      renderer: Handsontable.renderers.NumericRenderer,
+      editor: Handsontable.editors.NumericEditor
+    };
+
     this.init = function () {
       var instance = this;
       instance.formulasEnabled = !!instance.getSettings().formulas;
@@ -365,7 +374,9 @@
         instance.plugin.custom = custom;
 
         Handsontable.cellTypes['formula'] = formulaCell;
+
         Handsontable.TextCell.renderer = formulaRenderer;
+        Handsontable.NumericCell.renderer = formulaRenderer;
 
         instance.addHook('afterChange', afterChange);
         instance.addHook('beforeAutofillInsidePopulate', beforeAutofillInsidePopulate);
