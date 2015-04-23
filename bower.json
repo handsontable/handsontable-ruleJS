@@ -28,7 +28,7 @@
   ],
   "dependencies": {
     "handsontable": "0.14.1",
-    "ruleJS": "0.0.4",
+    "ruleJS": "0.0.5",
     "jquery": "2.1.3"
   }
 }
