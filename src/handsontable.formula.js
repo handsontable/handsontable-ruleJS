@@ -44,7 +44,7 @@
         }
 
         // check if typed formula or cell value should be recalculated
-        if ((value && value[0] === '=') || needUpdate) {
+        if (isFormula(value) || needUpdate) {
 
           formula = value.substr(1).toUpperCase();
 
@@ -130,7 +130,7 @@
           var cellId = instance.plugin.utils.translateCellCoords({row: row, col: col});
 
           // if changed value, all references cells should be recalculated
-          if (value[0] !== '=' || prevValue !== value) {
+          if (!isFormula(value) || prevValue !== value) {
             instance.plugin.matrix.removeItem(cellId);
 
             // get referenced cells
@@ -161,7 +161,7 @@
         rlength = data.length, // rows
         clength = data ? data[0].length : 0; //cols
 
-      if (value[0] === '=') { // formula
+      if (isFormula(value)) { // formula
 
         if (['down', 'up'].indexOf(direction) !== -1) {
           delta = rlength * iterators.row;
