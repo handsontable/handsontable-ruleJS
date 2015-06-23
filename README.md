@@ -71,7 +71,7 @@ Then, run `handsontable()` constructor on an empty div and use `formulas:true` i
 * math functions: `+` `-` `*` `/` `^`
 * logical functions: `=` `>` `<` `>=` `<=` `<>` `NOT`
 * error handling: `#DIV/0!` `#ERROR` `#VALUE!` `#REF!` `#NAME?` `#N/A`
-* parser excel formulas ([list of supported formulas with links to documentation](http://handsontable.github.io/RuleJS/))
+* parser excel formulas ([list of supported formulas with links to documentation](http://handsontable.github.io/ruleJS/))
 * absolute cell references: `$A$1` `$A1` `A$1`
 * nested functions 
 * simple auto-fill 
