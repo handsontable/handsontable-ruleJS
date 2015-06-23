@@ -81,4 +81,4 @@ Then, run `handsontable()` constructor on an empty div and use `formulas:true` i
 
 ## Demo
 
-[link](http://handsontable.github.io/handsontable-RuleJS/)
+[link](http://handsontable.github.io/handsontable-ruleJS/)
