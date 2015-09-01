@@ -1,3 +1,2 @@
 # handsontable-ruleJS
-Formula parser for Handsontable data grid using RuleJS library
-
+Formula parser for Handsontable data grid using RuleJS library.
