@@ -116,7 +116,12 @@
         return;
       }
 
-      if (source === 'edit' || source === 'undo' || source === 'autofill') {
+      // -----------cyy 修改于2015年5月26号 10:32:00↓--------------
+      // 修改拷贝数据后公式不自动计算的bug、修改handsontable撤销操作时的bug
+      //if (source === 'edit' || source === 'undo' || source === 'autofill') {
+      if (source === 'edit' || source === 'undo' || source === 'autofill' || source === 'paste' 
+	    || source === 'create_row_formula' || source === 'remove_row_formula') {
+      // -----------cyy 修改于2015年5月26号 10:32:00↑--------------
 
         var rerender = false;
 
@@ -126,11 +131,28 @@
             col = item[1],
             prevValue = item[2],
             value = item[3];
-
+		  
+          // -----------cyy 添加于2015年5月21号 13:52:00↓--------------
+          // 修改handsontable使用json数据时，公式无法自动刷新计算的bug
+		  var columns = instance.getSettings().columns;
+		  if (columns != null && columns.length > 0 && columns[0].data != null) {
+			 for (var i=0;i<columns.length;i++) {
+				if (col == columns[i].data) {
+					col = i;
+					break;
+				}
+			 }
+		  }
+		  // -----------cyy 添加于2015年5月21号 13:52:00↑--------------
+		  
           var cellId = instance.plugin.utils.translateCellCoords({row: row, col: col});
 
           // if changed value, all references cells should be recalculated
-          if (value[0] !== '=' || prevValue !== value) {
+          // -----------cyy 修改于2015年7月20号 16:30:00↓--------------
+          //if (value[0] !== '=' || prevValue !== value) {
+          //修改前台js报错的bug
+          if ((value != null && value[0] !== '=') || prevValue !== value) {
+          // -----------cyy 修改于2015年7月20号 16:30:00↑--------------
             instance.plugin.matrix.removeItem(cellId);
 
             // get referenced cells
@@ -251,26 +273,50 @@
 
       var instance = this;
 
-      var selectedRow = instance.plugin.utils.isArray(instance.getSelected()) ? instance.getSelected()[0] : undefined;
+      // -----------cyy 修正于2015年7月3号 09:56:00↓--------------
+      //var selectedRow = instance.plugin.utils.isArray(instance.getSelected()) ? instance.getSelected()[0] : undefined;
 
-      if (instance.plugin.utils.isUndefined(selectedRow)) {
-        return;
-      }
+      //if (instance.plugin.utils.isUndefined(selectedRow)) {
+      //  return;
+      //}
+      
+      //var direction = (selectedRow >= row) ? 'before' : 'after',
+      
+      // 修正从下往上选中单元格进行添加行后，公式计算错误的bug
+	  // 取得添加的开始和结束行号
+      var createdRowStart = row;
+	  var createdRowEnd = row + amount - 1;
 
-      var direction = (selectedRow >= row) ? 'before' : 'after',
+      // 修正为根据选中的开始和结束行号共通判断方向
+      var direction = (createdRowStart >= row && createdRowEnd >= row) ? 'before' : 'after',
+      // -----------cyy 修正于2015年7月3号 09:56:00↑--------------
         items = instance.plugin.matrix.getRefItemsToRow(row),
-        counter = 1,
+        // -----------cyy 添加于2015年5月21号 13:52:00↓--------------
+        // 修改添加多行时，公式计算错误的bug
+        // counter = 1,
+        counter = amount,
+        // -----------cyy 添加于2015年5月21号 13:52:00↑--------------
         changes = [];
 
       items.forEach(function (id) {
         var item = instance.plugin.matrix.getItem(id),
-          formula = instance.plugin.utils.changeFormula(item.formula, 1, {row: row}), // update formula if needed
+          // -----------cyy 添加于2015年5月21号 13:52:00↓--------------
+          // 修改添加多行时，公式计算错误的bug
+          // formula = instance.plugin.utils.changeFormula(item.formula, 1, {row: row}), // update formula if needed
+          formula = instance.plugin.utils.changeFormula(item.formula, counter, {row: row}), // update formula if needed
+          // -----------cyy 添加于2015年5月21号 13:52:00↑--------------
           newId = id;
 
         if (formula !== item.formula) { // formula updated
 
+          // -----------cyy 修正于2015年7月3号 09:56:00↓--------------
           // change row index and get new coordinates
-          if ((direction === 'before' && selectedRow <= item.row) || (direction === 'after' && selectedRow < item.row)) {
+          //if ((direction === 'before' && selectedRow <= item.row) || (direction === 'after' && selectedRow < item.row)) {
+          
+          //修正为通过选中开始和结束行号共通判断是否要变为新的坐标
+          if ((direction === 'before' && (createdRowStart <= item.row || createdRowEnd <= item.row)) || 
+        		  (direction === 'after' && (createdRowStart < item.row || createdRowEnd < item.row ))) {
+          // -----------cyy 修正于2015年7月3号 09:56:00↑--------------
             newId = instance.plugin.utils.changeRowIndex(id, counter);
           }
 
@@ -291,9 +337,72 @@
       }
 
       if (changes) {
-        instance.setDataAtCell(changes);
+    	// -----------cyy 修正于2015年7月20号 16:41:00↓--------------
+    	// 由于添加行引起的公式变更，使用单独的source
+        instance.setDataAtCell(changes, null, null, "create_row_formula");
+        // -----------cyy 修正于2015年7月20号 16:41:00↑--------------
       }
     };
+
+	// -----------cyy 添加于2015年5月21号 13:52:00↓--------------
+	// 修改删除行时，公式没有自动变化的bug
+	var afterRemoveRow = function (row, amount, auto) {
+      if (auto) {
+        return;
+      }
+
+      var instance = this;
+
+	  // 删除要删除行里的公式的ITEM
+      for(var i = row; i < row + amount; i++) {
+    	  instance.plugin.matrix.removeItemsInRow(i);
+      }
+	  
+      // 取得删除的开始和结束行号
+      var deletedRowStart = row;
+	  var deletedRowEnd = row + amount - 1;
+      
+      // 根据要删除的开始和结束行号共同判断方向
+      var direction = (deletedRowStart >= row && deletedRowEnd >= row) ? 'before' : 'after',
+        items = instance.plugin.matrix.getRefItemsToRow(row),
+        counter = 0-amount,
+        changes = [];
+
+      items.forEach(function (id) {
+        var item = instance.plugin.matrix.getItem(id),
+          formula = instance.plugin.utils.changeFmu(item.formula, counter, {row: row}), // update formula if needed
+          newId = id;
+
+        if (formula !== item.formula) { // formula updated
+
+          // change row index and get new coordinates
+          if ((direction === 'before' && (deletedRowStart <= item.row || deletedRowEnd <= item.row)) 
+        		  || (direction === 'after' && (deletedRowStart < item.row || deletedRowEnd < item.row ))) {
+            newId = instance.plugin.utils.changeRowIndex(id, counter);
+          }
+
+          var cellCoords = instance.plugin.utils.cellCoords(newId);
+
+          if (newId !== id) {
+            // remove current item from matrix
+            instance.plugin.matrix.removeItem(id);
+          }
+
+          // set updated formula in new cell
+          changes.push([cellCoords.row, cellCoords.col, '=' + formula]);
+        }
+      });
+
+      if (items) {
+        instance.plugin.matrix.removeItemsBelowRow(row);
+      }
+
+      if (changes) {
+    	// 由于删除行引起的公式变更，使用单独的source
+        instance.setDataAtCell(changes, null, null, "remove_row_formula");
+      }
+    };
+	// -----------cyy 添加于2015年5月21号 13:52:00↑-------------
 
     var afterCreateCol = function (col) {
       var instance = this;
@@ -343,6 +452,62 @@
       }
     };
 
+	// -----------cyy 添加于2015年5月21号 13:52:00↓--------------
+	// 修改删除列时，公式没有自动变化的bug
+	var afterRemoveCol = function (col,amount) {
+      var instance = this;
+
+      var selectedCol = instance.plugin.utils.isArray(instance.getSelected()) ? instance.getSelected()[1] : undefined;
+
+      if (instance.plugin.utils.isUndefined(selectedCol)) {
+        return;
+      }
+
+      // 删除要删除列里的公式的ITEM
+      for(var i = col; i < col + amount; i++) {
+    	  instance.plugin.matrix.removeItemsInCol(i);
+      }
+      
+      var items = instance.plugin.matrix.getRefItemsToColumn(col),
+        counter = 0-amount,
+        direction = (selectedCol >= col) ? 'before' : 'after',
+        changes = [];
+
+      items.forEach(function (id) {
+
+        var item = instance.plugin.matrix.getItem(id),
+          formula = instance.plugin.utils.changeFormula(item.formula, counter, {col: col+1}), // update formula if needed
+          newId = id;
+
+        if (formula !== item.formula) { // formula updated
+
+          // change col index and get new coordinates
+          if ((direction === 'before' && selectedCol <= item.col) || (direction === 'after' && selectedCol < item.col)) {
+            newId = instance.plugin.utils.changeColIndex(id, counter);
+          }
+
+          var cellCoords = instance.plugin.utils.cellCoords(newId);
+
+          if (newId !== id) {
+            // remove current item from matrix if id changed
+            instance.plugin.matrix.removeItem(id);
+          }
+
+          // set updated formula in new cell
+          changes.push([cellCoords.row, cellCoords.col, '=' + formula]);
+        }
+      });
+
+      if (items) {
+        instance.plugin.matrix.removeItemsBelowCol(col);
+      }
+
+      if (changes) {
+        instance.setDataAtCell(changes);
+      }
+    };
+	// -----------cyy 添加于2015年5月21号 13:52:00↑-------------
+
     var formulaCell = {
       renderer: formulaRenderer,
       editor: Handsontable.editors.TextEditor,
@@ -383,6 +548,11 @@
 
         instance.addHook('afterCreateRow', afterCreateRow);
         instance.addHook('afterCreateCol', afterCreateCol);
+        // -----------cyy 添加于2015年5月21号 13:52:00↓--------------
+        // 添加删除行列，监听执行事件
+        instance.addHook('afterRemoveRow', afterRemoveRow);
+        instance.addHook('afterRemoveCol', afterRemoveCol);
+        // -----------cyy 添加于2015年5月21号 13:52:00↑--------------
 
       } else {
         instance.removeHook('afterChange', afterChange);
@@ -390,6 +560,11 @@
 
         instance.removeHook('afterCreateRow', afterCreateRow);
         instance.removeHook('afterCreateCol', afterCreateCol);
+        // -----------cyy 添加于2015年5月21号 13:52:00↓--------------
+        // 添加删除行列，监听执行事件
+        instance.addHook('afterRemoveRow', afterRemoveRow);
+        instance.addHook('afterRemoveCol', afterRemoveCol);
+        // -----------cyy 添加于2015年5月21号 13:52:00↑--------------
       }
     };
   }
