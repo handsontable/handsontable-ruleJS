@@ -21606,6 +21606,80 @@ var ruleJS = (function (root) {
       });
     },
 
+	// -----------cyy 添加于2015年5月28号 13:06:00↓--------------
+    // 解决删除行后公式变化不正确的bug
+    changeFmu: function (formula, delta, change) {
+      if (!delta) {
+        delta = 1;
+      }
+
+	  var fmu = formula;
+	  var cellIds = [];
+	  if (fmu.indexOf(":") != -1) {
+	  fmu.replace(/(\$?[A-Za-z]+\$?[0-9]+\s*\:+\s*\$?[A-Za-z]+\$?[0-9]+)/g, function (match) {
+		var ms = match.split(":");
+		// 是否是较大的单元格，0：否，1：是，2：相等
+		var ms0IsBigger = 0;
+		var ms1IsBigger = 1;
+		var ms0AlphaNum = instance.utils.getCellAlphaNum(ms[0].trim());
+		var ms1AlphaNum = instance.utils.getCellAlphaNum(ms[1].trim());
+		if (ms0AlphaNum.num > ms1AlphaNum.num) {
+		  ms0IsBigger = 1;
+		  ms1IsBigger = 0;
+		} else if (ms0AlphaNum.num === ms1AlphaNum.num) {
+		  ms0IsBigger = 2;
+		  ms1IsBigger = 2;
+		}
+		cellIds.push([":", [ms[0].trim(), ms0IsBigger], [ms[1].trim(), ms1IsBigger] ])
+		return match;
+	  });
+	  }
+
+      return formula.replace(/(\$?[A-Za-z]+\$?[0-9]+)/g, function (match) {
+        var alphaNum = instance.utils.getCellAlphaNum(match),
+            alpha = alphaNum.alpha,
+            num = alphaNum.num;
+
+        if (instance.utils.isNumber(change.col)) {
+          num = instance.utils.toNum(alpha);
+
+          if (change.col <= num) {
+            return instance.utils.changeColIndex(match, delta);
+          }
+        }
+
+        if (instance.utils.isNumber(change.row)) {
+    	if(delta < 0 && change.row + 1 <= num && num <= (change.row + Math.abs(delta))) {
+		    var newCellId = match;
+		    cellIds.forEach(function (item) {
+			  if(item[0] === ":") {
+			    if (match === item[1][0]) {
+				  if (item[1][1] === 0) {
+				    newCellId = alpha + '' + (change.row + 1);
+				  } else if (item[1][1] === 1) {
+				    newCellId = alpha + '' + change.row;
+				  }
+				} else if (match === item[2][0]) {
+				  if (item[2][1] === 0) {
+				    newCellId = alpha + '' + (change.row + 1);
+				  } else if (item[2][1] === 1) {
+				    newCellId = alpha + '' + change.row;
+				  }
+				}
+			  }
+			});
+			return newCellId;
+		  } else {
+          if (change.row < num) {
+            return instance.utils.changeRowIndex(match, delta);
+          }
+		  }
+        }
+        return match;
+      });
+    },
+    // -----------cyy 添加于2015年5月28号 13:06:00↑--------------
+
     /**
      * update formula cells
      * @param {String} formula
@@ -21838,6 +21912,12 @@ var ruleJS = (function (root) {
      * @returns {Number}
      */
     number: function (num) {
+      // -----------cyy 添加于2015年5月26号 15:41:00↓--------------
+      // 解决+ - * / 计算空白值时错误的bug
+      if (num == null || num === "") {
+        num = 0;
+      }
+      // -----------cyy 添加于2015年5月26号 15:41:00↑--------------
       switch (typeof num) {
         case 'number':
           return num;
@@ -22035,7 +22115,11 @@ var ruleJS = (function (root) {
         // get value
         value = item ? item.value : fnCellValue(cellCoords.row, cellCoords.col);
 
-        if (instance.utils.isNull(value)) {
+        // -----------cyy 修改于2015年6月9号 15:16:00↓--------------
+        // 修改添加行后公式出现N/A错误的bug（由于添加行默认值是undefined导致的，默认值是undefined是由于第一行数据的值是undefined导致的）
+        //if (instance.utils.isNull(value)) {
+        if (instance.utils.isNull(value) || value === undefined) {
+        // -----------cyy 修改于2015年6月9号 15:16:00↑--------------
           value = 0;
         }
 
