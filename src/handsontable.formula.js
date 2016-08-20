@@ -44,7 +44,7 @@
         }
 
         // check if typed formula or cell value should be recalculated
-        if ((value && value[0] === '=') || needUpdate) {
+        if (isFormula(value) || needUpdate) {
 
           formula = value.substr(1).toUpperCase();
 
